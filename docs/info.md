@@ -23,3 +23,7 @@ From the repository root, run:
 
 ```bash
 make test
+```
+
+## External hardware
+TBD

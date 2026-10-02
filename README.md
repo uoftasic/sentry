@@ -28,10 +28,10 @@ Windows users should use **WSL2 with Ubuntu 24.04** for development. The project
 Open PowerShell as Administrator and run:
 
 ```powershell
-wsl --install -d Ubuntu-22.04
+wsl --install -d Ubuntu-24.04
 ```
 
-Restart your computer if prompted, then open Ubuntu 22.04 and complete the initial setup.
+Restart your computer if prompted, then open Ubuntu 24.04 and complete the initial setup.
 
 #### 2. Install Development Tools
 
@@ -39,7 +39,7 @@ Inside the Ubuntu/WSL terminal, run:
 
 ```bash
 sudo apt update
-sudo apt install -y git make iverilog python3 python3-pip python3-venv wget unzip
+sudo apt install -y git make iverilog python3 python3-pip python3-venv wget unzip cargo
 ```
 
 #### 3. Clone the Repository
@@ -196,3 +196,35 @@ src/
 ```
 
 TinyTapeout also requires source files to be added to `info.yaml`, so update the project configuration when adding new modules.
+
+## Viewing Waveforms
+
+Install GTKWave:
+
+```bash
+sudo apt install -y gtkwave
+```
+
+Or install Surfer:
+
+```bash
+cargo install surfer
+```
+
+Then open the waveform with:
+
+```bash
+gtkwave test/tb.fst
+```
+
+or:
+
+```bash
+surfer test/tb.fst
+```
+
+Unit-test waveforms are generated under:
+
+```text
+test/unit/sim_build/<module_name>/
+```

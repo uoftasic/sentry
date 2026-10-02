@@ -1,8 +1,10 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
+ifneq ($(MAKECMDGOALS),clean)
 ifndef MODULE
 $(error MODULE is required. Usage: make MODULE=<module_name>)
+endif
 endif
 
 REPO_ROOT := $(abspath $(CURDIR)/../..)
@@ -26,3 +28,5 @@ SIM_BUILD := $(CURDIR)/sim_build/$(MODULE)
 export PYTHONPATH := $(CURDIR):$(PYTHONPATH)
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
+
+WAVES ?= 1
