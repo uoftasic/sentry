@@ -90,7 +90,7 @@ If `svlint` is not found after installation, make sure `/usr/local/bin` is inclu
 
 ## Testing
 
-Integration tests are placed directly under `test/` and test the complete TinyTapeout design through `tb.v`.
+Integration tests are placed directly under `test/` and test the complete TinyTapeout design through `tb.sv`.
 
 Unit tests are placed under:
 
