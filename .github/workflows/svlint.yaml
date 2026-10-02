@@ -1,0 +1,30 @@
+name: svlint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install svlint
+        shell: bash
+        run: |
+          SVLINT_VERSION="0.9.3"
+          SVLINT_ZIP_NAME="svlint-v${SVLINT_VERSION}-x86_64-lnx.zip"
+          SVLINT_ZIP_URL="https://github.com/dalance/svlint/releases/download/v${SVLINT_VERSION}/${SVLINT_ZIP_NAME}"
+
+          wget "${SVLINT_ZIP_URL}"
+          unzip "${SVLINT_ZIP_NAME}"
+          sudo mv bin/* /usr/local/bin/
+
+          svlint --version
+
+      - name: Run svlint
+        run: make lint
