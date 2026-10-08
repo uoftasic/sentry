@@ -26,3 +26,11 @@ RUN umask 022 && \
 
 # Install LibreLane
 RUN /ttsetup/venv/bin/pip install librelane==3.0.14
+
+# Install svlint
+RUN apt-get update && apt-get install -y unzip && \
+    curl -fsSL https://github.com/dalance/svlint/releases/download/v0.9.3/svlint-v0.9.3-x86_64-lnx.zip \
+    -o /tmp/svlint.zip && \
+    unzip -q /tmp/svlint.zip -d /tmp/svlint && \
+    install -m 755 /tmp/svlint/bin/svlint /usr/local/bin/svlint && \
+    rm -rf /tmp/svlint /tmp/svlint.zip
