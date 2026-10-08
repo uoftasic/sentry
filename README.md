@@ -57,9 +57,9 @@ The Dev Container includes the tools needed for RTL simulation and TinyTapeout's
 
 If you prefer not to use Docker, follow the manual Ubuntu/WSL installation instructions below for RTL development.
 
-### Windows
+### Windows / Linux
 
-Windows users should use **WSL2 with Ubuntu 24.04** for development. The project relies on Linux development tools such as GNU Make, Icarus Verilog, cocotb, and svlint, so native Windows development is not currently recommended.
+Windows users should use **WSL2 with Ubuntu 24.04** for development. The project relies on Linux development tools such as GNU Make, Icarus Verilog, cocotb, and svlint, so native Windows development is not currently recommended. MacOS has not been tested.
 
 #### 1. Install WSL2
 
