@@ -19,6 +19,44 @@ These features are accumulated over observation windows and passed to one or mor
 
 ## Setup
 
+The easiest way to get set up is to use the devcontainer, which installs all tools needed for RTL simulation and physical design / synthesis.
+
+#### 1. Install Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) with the WSL2 engine enabled
+- [Visual Studio Code](https://code.visualstudio.com/)
+- VS Code **WSL** and **Dev Containers** extensions
+
+In Docker Desktop, enable WSL integration for your Ubuntu distribution under **Settings → Resources → WSL Integration**.
+
+#### 2. Open the Dev Container
+
+From the WSL terminal, open the cloned repository:
+
+```bash
+cd ~/sentry
+code .
+```
+
+In VS Code, open the Command Palette (`Ctrl+Shift+P`) and select **Dev Containers: Reopen in Container**.
+
+Wait for the container to build. This may take several minutes on the first run.
+
+#### 3. Verify the Environment
+
+Once the container is running, open a terminal in VS Code and run:
+
+```bash
+make doctor
+make test
+```
+
+The Dev Container includes the tools needed for RTL simulation and TinyTapeout's local ASIC hardening flow.
+
+### Manual Setup
+
+If you prefer not to use Docker, follow the manual Ubuntu/WSL installation instructions below for RTL development.
+
 ### Windows
 
 Windows users should use **WSL2 with Ubuntu 24.04** for development. The project relies on Linux development tools such as GNU Make, Icarus Verilog, cocotb, and svlint, so native Windows development is not currently recommended.
