@@ -2,7 +2,7 @@
 
 Each person should take one task/file group. The shared `Event` and `FeatureTracker` interfaces should not be changed without discussing it with the team.
 
-For all tasks, implement it in the hardware-friendly way that you will do in in RTL! Think it through.
+For all tasks, implement it in the hardware-friendly way that you will do in in RTL! Think it through. Details on implementation for many of the tasks can be found in the notion.
 - Try to avoid using multipliers / dividers unless a term is a power of two
 - Minimize the amount of state you need to store
 
@@ -22,6 +22,8 @@ It should:
 - merge the two files into one chronological event list.
 
 Do not calculate any features here.
+
+Since RanSMAP does not give data, you can also try to find a way to get test traces that contain the actual data so we can test the entropy estimator.
 
 ---
 
@@ -155,7 +157,7 @@ Implement:
 
 The initial weights can be supplied manually. Training/learning the weights can be added afterward.
 
-Also conduct research into how we could do the decision tree classifier in hardware.
+Also conduct research into how we could do the decision tree classifier in hardware, and create a class for that as well.
 ---
 
 ## 10. Main integration

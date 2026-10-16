@@ -20,6 +20,7 @@ class Event:
     lba: int
     block_count: int
     entropy: float | None = None
+    data_sample: bytes | None = None
     logical_block_size_bytes: int = 512
 
     @property
