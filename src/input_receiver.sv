@@ -53,14 +53,13 @@ module receiver(
             curr_state <= IDLE;
             addrCounter <= 2'b00;
             sampleCounter <= 3'b000;
-        end
-        
-        else begin
+        end else begin
             curr_state <= next_state;
             addrCounter <= addrCounter + 2'b1;
             sampleCounter <= sampleCounter + 3'b001;
         end
 
+        // counters pls dont touch  
         if(addrCounter == maxAddrCount) addrCounter <= 2'b00;
         if(sampleCounter == maxSampleCount) sampleCounter <= 3'b000;
     end
