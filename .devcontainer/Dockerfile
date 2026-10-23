@@ -34,3 +34,6 @@ RUN apt-get update && apt-get install -y unzip && \
     unzip -q /tmp/svlint.zip -d /tmp/svlint && \
     install -m 755 /tmp/svlint/bin/svlint /usr/local/bin/svlint && \
     rm -rf /tmp/svlint /tmp/svlint.zip
+
+# Normalize the copied startup script for Linux, including CRLF checkouts.
+RUN sed -i 's/\r$//' /ttsetup/copy_tt_support_tools.sh
