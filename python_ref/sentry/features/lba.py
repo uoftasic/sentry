@@ -25,8 +25,8 @@ class LBATracker(FeatureTracker):
         # for calculating variance
         self.list_lba = []
         self.num_events = 0
-        self.true_variance = 0
-        self.histogram_approximated_variance
+        self.true_variance = 0.0
+        self.histogram_approximated_variance = 0.0
 
         # histogram
         self.LBA_histogram = [0] * num_regions
