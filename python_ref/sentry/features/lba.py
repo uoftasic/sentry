@@ -52,6 +52,11 @@ class LBATracker(FeatureTracker):
             raise ValueError("event lba must not be negative")
         if event.lba >= self.max_lba:
             raise ValueError("event lba must be less than LBATracker's max_lba")
+        if (
+            self.expand_requests_to_blocks
+            and event.lba + event.block_count > self.max_lba
+        ):
+            raise ValueError("request extends beyond LBATracker's max_lba")
 
         if self.condition(event):
             # update counters
