@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..event import Event
+from ..event import Event, Op
 from ..tracker import FeatureTracker
 
 
@@ -100,3 +100,75 @@ class LBATracker(FeatureTracker):
         self.histogram_approximated_variance = 0.0
         self.LBA_histogram[:] = [0] * len(self.LBA_histogram)
         self.num_nonzero_regions = 0
+
+
+if __name__ == "__main__":
+    print("LBATracker demo: usable LBAs 0-15, four regions of width four")
+    print("Regions: 0=[0-3], 1=[4-7], 2=[8-11], 3=[12-15]")
+    print("Only WRITE events are counted in these examples.")
+
+    tracker = LBATracker(16, 4, condition=lambda event: event.op == Op.WRITE)
+
+    def show_case(
+        title: str,
+        expected_histogram: list[int],
+        expected_features: dict[str, int | float],
+    ) -> None:
+        result = tracker.features()
+        print(f"\n{title}")
+        print(f"  Tracked LBAs: {tracker.list_lba}")
+        print(f"  Histogram (events per region): {tracker.LBA_histogram}")
+        print(f"  Exact LBA variance: {result['lba_variance']}")
+        print(f"  Histogram midpoint variance: {result['lba_histogram_variance']}")
+        print(f"  Regions touched: {result['lba_regions_touched']}")
+        assert tracker.LBA_histogram == expected_histogram
+        assert result == expected_features
+        print("  Expected values confirmed.")
+
+    show_case(
+        "Case 1: empty window",
+        [0, 0, 0, 0],
+        {"lba_variance": 0.0, "lba_histogram_variance": 0.0, "lba_regions_touched": 0},
+    )
+
+    for lba in (0, 3):
+        tracker.update(Event(Op.WRITE, 0, lba, 1))
+    show_case(
+        "Case 2: two writes within region 0; the histogram loses their separation",
+        [2, 0, 0, 0],
+        {"lba_variance": 2.25, "lba_histogram_variance": 0.0, "lba_regions_touched": 1},
+    )
+
+    tracker.reset_window()
+    tracker.update(Event(Op.READ, 0, 0, 1))
+    for lba in (0, 3, 4, 7):
+        tracker.update(Event(Op.WRITE, 0, lba, 1))
+    show_case(
+        "Case 3: a filtered-out read and four writes across two regions",
+        [2, 2, 0, 0],
+        {"lba_variance": 6.25, "lba_histogram_variance": 4.0, "lba_regions_touched": 2},
+    )
+
+    tracker.reset_window()
+    show_case(
+        "Case 4: reset clears the window but keeps the region configuration",
+        [0, 0, 0, 0],
+        {"lba_variance": 0.0, "lba_histogram_variance": 0.0, "lba_regions_touched": 0},
+    )
+    tracker.update(Event(Op.WRITE, 0, 15, 1))
+    show_case(
+        "Case 5: LBA 15 is the last valid address, in region 3",
+        [0, 0, 0, 1],
+        {"lba_variance": 0.0, "lba_histogram_variance": 0.0, "lba_regions_touched": 1},
+    )
+
+    print("\nCase 6: invalid LBAs are rejected")
+    for lba in (-1, 16):
+        try:
+            tracker.update(Event(Op.WRITE, 0, lba, 1))
+        except ValueError as error:
+            print(f"  LBA {lba}: {error}")
+        else:
+            raise AssertionError(f"LBA {lba} should have been rejected")
+
+    print("\nend of demo.")
