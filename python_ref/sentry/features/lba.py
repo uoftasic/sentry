@@ -11,7 +11,7 @@ class LBATracker(FeatureTracker):
         self,
         max_lba: int,
         num_regions: int = 32,
-        condition = None # a function which outputs a boolean; optional
+        condition = None # bool = foo(Event), to filter events 
     ) -> None:
         if num_regions < 1:
             raise ValueError("num_regions must be positive")
