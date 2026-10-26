@@ -54,13 +54,29 @@ class LBATracker(FeatureTracker):
             raise ValueError("event lba must be less than LBATracker's max_lba")
 
         if self.condition(event):
-            self.list_lba.append(event.lba)
+            self.num_blocks += event.block_count
             self.num_events += 1
+            self.list_lba.append(event.lba)
 
-            region_index = event.lba // self.region_width
-            if self.LBA_histogram[region_index] == 0:
-                self.num_nonzero_regions += 1
-            self.LBA_histogram[region_index] += 1
+            if self.expand_requests_to_blocks:
+                end_lba = event.lba + event.block_count  # Exclusive.
+                first_region = event.lba // self.region_width
+                last_region = (end_lba - 1) // self.region_width
+
+                for region_index in range(first_region, last_region + 1):
+                    region_start = region_index * self.region_width
+                    region_end = region_start + self.region_width
+                    blocks_in_region = min(end_lba, region_end) - max(
+                        event.lba, region_start
+                    )
+                    if self.LBA_histogram[region_index] == 0:
+                        self.num_nonzero_regions += 1
+                    self.LBA_histogram[region_index] += blocks_in_region
+            else:
+                region_index = event.lba // self.region_width
+                if self.LBA_histogram[region_index] == 0:
+                    self.num_nonzero_regions += 1
+                self.LBA_histogram[region_index] += 1
 
     def features(self) -> dict[str, int | float]:
         """Return population variance and the number of occupied LBA regions.
