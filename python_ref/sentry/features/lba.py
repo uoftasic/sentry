@@ -59,8 +59,38 @@ class LBATracker(FeatureTracker):
             self.LBA_histogram[region_index] += 1
 
     def features(self) -> dict[str, int | float]:
-        """TODO(Task 4): return LBA variance and regions-touched values."""
-        raise NotImplementedError
+        """Return population variance and the number of occupied LBA regions.
+
+        The histogram approximation treats each region as if its events were
+        located at the midpoint of that region.
+        """
+        if self.num_events == 0:
+            self.true_variance = 0.0
+            self.histogram_approximated_variance = 0.0
+        else:
+            mean_lba = sum(self.list_lba) / self.num_events
+            self.true_variance = sum(
+                (lba - mean_lba) ** 2 for lba in self.list_lba
+            ) / self.num_events
+
+            midpoint_offset = (self.region_width - 1) / 2
+            histogram_mean = sum(
+                count * (index * self.region_width + midpoint_offset)
+                for index, count in enumerate(self.LBA_histogram)
+            ) / self.num_events
+            self.histogram_approximated_variance = sum(
+                count
+                * (
+                    index * self.region_width + midpoint_offset - histogram_mean
+                ) ** 2
+                for index, count in enumerate(self.LBA_histogram)
+            ) / self.num_events
+
+        return {
+            "lba_variance": self.true_variance,
+            "lba_histogram_variance": self.histogram_approximated_variance,
+            "lba_regions_touched": self.num_nonzero_regions,
+        }
 
     def reset_window(self) -> None:
         """TODO(Task 4): clear per-window LBA state."""
