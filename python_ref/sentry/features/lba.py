@@ -81,8 +81,8 @@ class LBATracker(FeatureTracker):
     def features(self) -> dict[str, int | float]:
         """Return population variance and the number of occupied LBA regions.
 
-        The histogram approximation treats each region as if its events were
-        located at the midpoint of that region.
+        The histogram approximation uses region indices, then scales their
+        variance by the square of the region width.
         """
         if self.num_events == 0:
             self.true_variance = 0.0
@@ -93,18 +93,17 @@ class LBATracker(FeatureTracker):
                 (lba - mean_lba) ** 2 for lba in self.list_lba
             ) / self.num_events
 
-            midpoint_offset = (self.region_width - 1) / 2
-            histogram_mean = sum(
-                count * (index * self.region_width + midpoint_offset)
+            mean_region = sum(
+                count * index
                 for index, count in enumerate(self.LBA_histogram)
             ) / self.num_events
-            self.histogram_approximated_variance = sum(
-                count
-                * (
-                    index * self.region_width + midpoint_offset - histogram_mean
-                ) ** 2
+            region_variance = sum(
+                count * (index - mean_region) ** 2
                 for index, count in enumerate(self.LBA_histogram)
             ) / self.num_events
+            self.histogram_approximated_variance = (
+                region_variance * self.region_width**2
+            )
 
         return {
             "lba_variance": self.true_variance,
