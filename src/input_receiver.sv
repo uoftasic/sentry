@@ -50,7 +50,7 @@ module receiver(
             lba <= 32'b0;
             block_count <= 8'b0;
             data_sample <= 64'b0;
-            curr_state <= IDLE;
+            curr_state <= OPCD;
             addrCounter <= 2'b0;
             sampleCounter <= 3'b0;
             data_ready <= 1'b0;
