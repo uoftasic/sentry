@@ -92,23 +92,35 @@ class LBATracker(FeatureTracker):
         The histogram approximation uses region indices, then scales their
         variance by the square of the region width.
         """
-        if self.num_events == 0:
+        if self.expand_requests_to_blocks:
+            N = self.num_blocks
+        else:
+            N = self.num_events
+        
+        if N == 0:
             self.true_variance = 0.0
             self.histogram_approximated_variance = 0.0
         else:
-            mean_lba = sum(self.list_lba) / self.num_events
+            # calculate true variance
+            mean_lba = sum(self.list_lba) / N
             self.true_variance = sum(
                 (lba - mean_lba) ** 2 for lba in self.list_lba
-            ) / self.num_events
+            ) / N
 
+            # calculate histogram approximated variance by assuming that:
+            # 1. all LBAs in a region are at the lower bound of the region
+            #   (translation of distribution does not affect variance)
+            # 2. all regions have region_width of 1
+            #   (stretching distribution by factor r increases variance by r^2)
+            # then multiply that variance by a factor to account for assumption #2
             mean_region = sum(
                 count * index
                 for index, count in enumerate(self.LBA_histogram)
-            ) / self.num_events
+            ) / N
             region_variance = sum(
                 count * (index - mean_region) ** 2
                 for index, count in enumerate(self.LBA_histogram)
-            ) / self.num_events
+            ) / N
             self.histogram_approximated_variance = (
                 region_variance * self.region_width**2
             )
