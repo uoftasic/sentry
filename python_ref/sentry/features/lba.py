@@ -44,8 +44,19 @@ class LBATracker(FeatureTracker):
             self.condition = condition
 
     def update(self, event: Event) -> None:
-        """TODO(Task 4): update variance accumulators and region histogram."""
-        raise NotImplementedError
+        if event.lba < 0:
+            raise ValueError("event lba must not be negative")
+        if event.lba >= self.max_lba:
+            raise ValueError("event lba must be less than LBATracker's max_lba")
+
+        if self.condition(event):
+            self.list_lba.append(event.lba)
+            self.num_events += 1
+
+            region_index = event.lba // self.region_width
+            if self.LBA_histogram[region_index] == 0:
+                self.num_nonzero_regions += 1
+            self.LBA_histogram[region_index] += 1
 
     def features(self) -> dict[str, int | float]:
         """TODO(Task 4): return LBA variance and regions-touched values."""
