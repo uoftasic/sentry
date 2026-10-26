@@ -60,10 +60,10 @@ class LBATracker(FeatureTracker):
             
             # update list of LBAs
             if self.expand_requests_to_blocks:
-                for lba in range(event.lba, event.lba + event.block_count - 1):
+                for lba in range(event.lba, event.lba + event.block_count):
                     self.list_lba.append(lba)
             else:
-                self.list_lba.append(lba)
+                self.list_lba.append(event.lba)
 
             # update histogram
             if self.expand_requests_to_blocks:
