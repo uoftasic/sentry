@@ -139,6 +139,7 @@ class LBATracker(FeatureTracker):
         self.histogram_approximated_variance = 0.0
         self.LBA_histogram[:] = [0] * len(self.LBA_histogram)
         self.num_nonzero_regions = 0
+        self.num_blocks = 0
 
 
 if __name__ == "__main__":
