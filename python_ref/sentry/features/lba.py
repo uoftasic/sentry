@@ -11,9 +11,37 @@ class LBATracker(FeatureTracker):
         self,
         max_lba: int,
         num_regions: int = 32,
+        condition = None # a function which outputs a boolean; optional
     ) -> None:
-        """TODO(Task 4): save configuration and initialize LBA state."""
-        raise NotImplementedError
+        if num_regions < 1:
+            raise ValueError("num_regions must be positive")
+        if max_lba < 1:
+            raise ValueError("max_lba must be positive")
+        if num_regions > max_lba:
+            raise ValueError("max_lba must not be less than num_regions")
+        if max_lba % num_regions != 0:
+            raise ValueError("max_lba must be divisible by num_regions")
+
+        # for calculating variance
+        self.list_lba = []
+        self.num_events = 0
+        self.true_variance = 0
+        self.histogram_approximated_variance
+
+        # histogram
+        self.LBA_histogram = [0] * num_regions
+        self.region_width = max_lba // num_regions
+        self.max_lba = max_lba
+
+        # number of regions touched
+        self.num_nonzero_regions = 0
+
+        # only track LBA if event meets a specified condition
+        # always track LBA if no condition is specified
+        if condition is None:
+            self.condition = lambda x: True
+        else:
+            self.condition = condition
 
     def update(self, event: Event) -> None:
         """TODO(Task 4): update variance accumulators and region histogram."""
