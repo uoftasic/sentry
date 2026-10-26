@@ -54,10 +54,14 @@ class LBATracker(FeatureTracker):
             raise ValueError("event lba must be less than LBATracker's max_lba")
 
         if self.condition(event):
+            # update counters
             self.num_blocks += event.block_count
             self.num_events += 1
+            
+            # update list of LBAs
             self.list_lba.append(event.lba)
 
+            # update histogram
             if self.expand_requests_to_blocks:
                 end_lba = event.lba + event.block_count  # Exclusive.
                 first_region = event.lba // self.region_width
