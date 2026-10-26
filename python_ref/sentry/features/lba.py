@@ -11,7 +11,8 @@ class LBATracker(FeatureTracker):
         self,
         max_lba: int,
         num_regions: int = 32,
-        condition = None # bool = foo(Event), to filter events 
+        condition = None, # bool = foo(Event), to filter events 
+        expand_requests_to_blocks: bool = False 
     ) -> None:
         if num_regions < 1:
             raise ValueError("num_regions must be positive")
@@ -25,6 +26,7 @@ class LBATracker(FeatureTracker):
         # for calculating variance
         self.list_lba = []
         self.num_events = 0
+        self.num_blocks = 0
         self.true_variance = 0.0
         self.histogram_approximated_variance = 0.0
 
@@ -42,6 +44,8 @@ class LBATracker(FeatureTracker):
             self.condition = lambda x: True
         else:
             self.condition = condition
+
+        self.expand_requests_to_blocks = expand_requests_to_blocks
 
     def update(self, event: Event) -> None:
         if event.lba < 0:
