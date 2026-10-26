@@ -25,17 +25,17 @@ module receiver(
     logic [1:0] addrCounter;
     logic [2:0] sampleCounter;
     logic [15:0] timeDeltaCounter;
-    localparam  = ; maxAddrCount = 3, maxSampleCount = 7;
+    localparam maxAddrCount = 3, maxSampleCount = 7;
 
     always_comb begin
         case (curr_state)
             OPCD: next_state = data_valid ? ADDR : OPCD; // opcodes read, prepare to read addresses
             ADDR: 
-                if (data_valid && addrCounter == maxAddrCount) next_state = BLKCNT; // addresses read, prepare to read block counts
+                if (addrCounter == maxAddrCount) next_state = BLKCNT; // addresses read, prepare to read block counts
                 else next_state = ADDR;
-            BLKCNT: next_state = data_valid ? SMPL : BLKCNT; // block counts read, prepare to read sample
+            BLKCNT: next_state = SMPL ; // block counts read, prepare to read sample
             SMPL: 
-                if (data_valid && sampleCounter == maxSampleCount) next_state = FINSH; // sample read, finishing
+                if (sampleCounter == maxSampleCount) next_state = FINSH; // sample read, finishing
                 else next_state = SMPL;
             FINSH: 
                 if(read) next_state = OPCD; // all done, go back to idle
@@ -66,15 +66,15 @@ module receiver(
                                 data_sample_valid <= 1'b0;
                                 if (data_valid) opcode <= data_in[3:0];
                             end
-                ADDR:       if (data_valid) begin  
+                ADDR:       begin  
                                 lba[31 - 8 * addrCounter -: 8] <= data_in;
                                 if(addrCounter == maxAddrCount) begin  // when all addresses are ready, data_ready is true
                                     data_ready <= 1'b1;
                                     addrCounter <= 2'b0;
                                 end else addrCounter <= addrCounter + 2'b1;
                             end
-                BLKCNT:     if (data_valid) block_count <= data_in;
-                SMPL:       if (data_valid) begin 
+                BLKCNT:     block_count <= data_in;
+                SMPL:       begin 
                                 data_sample[63 - 8 * sampleCounter -: 8] <= data_in;
                                 if(sampleCounter == maxSampleCount) begin // when all sample data are ready, data_sample_valid is true
                                     data_sample_valid <= 1'b1;
