@@ -93,5 +93,10 @@ class LBATracker(FeatureTracker):
         }
 
     def reset_window(self) -> None:
-        """TODO(Task 4): clear per-window LBA state."""
-        raise NotImplementedError
+        """Clear measurements for the next window, keeping the configuration."""
+        self.list_lba.clear()
+        self.num_events = 0
+        self.true_variance = 0.0
+        self.histogram_approximated_variance = 0.0
+        self.LBA_histogram[:] = [0] * len(self.LBA_histogram)
+        self.num_nonzero_regions = 0
