@@ -148,5 +148,138 @@ class LBATracker(FeatureTracker):
 
 
 if __name__ == "__main__":
-    # TO-DO: write an actually useful demo/verification here
-    pass
+    import argparse
+    import math
+    import random
+    import secrets
+    import statistics
+
+    parser = argparse.ArgumentParser(description="Demonstrate LBA tracking patterns")
+    parser.add_argument(
+        "--seed", type=int, help="reuse a seed to generate the same requests"
+    )
+    args = parser.parse_args()
+    seed = args.seed if args.seed is not None else secrets.randbits(64)
+    rng = random.Random(seed)
+
+    max_lba = 1 << 20
+    num_regions = 32
+    region_width = max_lba // num_regions
+    requests_per_case = 4096
+
+    def make_requests(pattern: str) -> list[tuple[int, int]]:
+        requests = []
+        scan_lba = rng.randrange(0, max_lba // 4)
+        hotspot_region = rng.randrange(1, num_regions - 1)
+        for i in range(requests_per_case):
+            block_count = rng.randint(1, 128)
+            if pattern == "Sequential scan":
+                lba = scan_lba
+                scan_lba += block_count + rng.randint(0, 8)
+            elif pattern == "One-region hotspot":
+                lba = (
+                    hotspot_region * region_width
+                    + region_width // 2
+                    + rng.randint(-2048, 2048)
+                )
+            elif pattern == "Two distant clusters":
+                region = 4 if i % 2 == 0 else 26
+                lba = region * region_width + region_width // 2 + rng.randint(-2048, 2048)
+            elif pattern == "Boundary crossings":
+                boundary = rng.randrange(1, num_regions) * region_width
+                before = rng.randint(1, 64)
+                lba = boundary - before
+                block_count = before + rng.randint(1, 64)
+            else:  # Scattered requests
+                lba = rng.randrange(0, max_lba - block_count + 1)
+            requests.append((lba, block_count))
+        return requests
+
+    def check_tracker(
+        tracker: LBATracker,
+        requests: list[tuple[int, int]],
+        expand: bool,
+    ) -> dict[str, int | float]:
+        expected_lbas = [
+            lba
+            for start, count in requests
+            for lba in (range(start, start + count) if expand else (start,))
+        ]
+        expected_histogram = [0] * num_regions
+        for lba in expected_lbas:
+            expected_histogram[lba // region_width] += 1
+
+        result = tracker.features()
+        assert tracker.num_events == len(requests)
+        assert tracker.num_blocks == sum(count for _, count in requests)
+        assert tracker.LBA_histogram == expected_histogram
+        assert tracker.num_nonzero_regions == sum(bool(n) for n in expected_histogram)
+        assert result["lba_regions_touched"] == tracker.num_nonzero_regions
+        assert math.isclose(
+            result["lba_variance"], statistics.pvariance(expected_lbas), rel_tol=1e-12
+        )
+        return result
+
+    print(f"Seed: {seed}  (repeat with --seed {seed})")
+    print(f"{requests_per_case:,} requests per case; {num_regions} regions")
+
+    for pattern in (
+        "Sequential scan",
+        "One-region hotspot",
+        "Two distant clusters",
+        "Boundary crossings",
+        "Scattered requests",
+    ):
+        requests = make_requests(pattern)
+        starts = LBATracker(max_lba=max_lba, num_regions=num_regions)
+        blocks = LBATracker(
+            max_lba=max_lba,
+            num_regions=num_regions,
+            expand_requests_to_blocks=True,
+        )
+        for i, (lba, block_count) in enumerate(requests):
+            event = Event(Op.READ, i, lba, block_count)
+            starts.update(event)
+            blocks.update(event)
+
+        start_features = check_tracker(starts, requests, expand=False)
+        block_features = check_tracker(blocks, requests, expand=True)
+
+        print(f"\n{pattern}")
+        print("First requests (start LBA, blocks): " + ", ".join(
+            f"({lba:,}, {count})" for lba, count in requests[:5]
+        ))
+        print(
+            f"{'Mode':<12} {'Samples':>9} {'Exact variance':>18} "
+            f"{'Histogram variance':>20} {'Error':>9} {'Regions':>8}"
+        )
+        for label, tracker, features in (
+            ("Starts", starts, start_features),
+            ("Blocks", blocks, block_features),
+        ):
+            exact = features["lba_variance"]
+            approximate = features["lba_histogram_variance"]
+            error = f"{abs(approximate - exact) / exact:.1%}" if exact else "n/a"
+            samples = tracker.num_blocks if tracker.expand_requests_to_blocks else tracker.num_events
+            print(
+                f"{label:<12} {samples:>9,} {exact:>18,.1f} "
+                f"{approximate:>20,.1f} {error:>9} "
+                f"{features['lba_regions_touched']:>8}"
+            )
+
+        print("\nHistogram (counts by region):")
+        column_width = max(
+            5,
+            *(len(f"{count:,}") for count in starts.LBA_histogram + blocks.LBA_histogram),
+        )
+        for first in range(0, num_regions, 16):
+            region_slice = range(first, first + 16)
+            print("Region " + " ".join(f"{i:>{column_width}}" for i in region_slice))
+            print("Starts " + " ".join(
+                f"{starts.LBA_histogram[i]:>{column_width},}" for i in region_slice
+            ))
+            print("Blocks " + " ".join(
+                f"{blocks.LBA_histogram[i]:>{column_width},}" for i in region_slice
+            ))
+            if first + 16 < num_regions:
+                print()
