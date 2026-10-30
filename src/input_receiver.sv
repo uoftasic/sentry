@@ -81,7 +81,6 @@ module receiver #(
           else sampleCounter <= sampleCounter + 2'b1;
         end
         FINSH: begin
-          time_delta  <= timeDeltaCounter;
           event_valid <= 1'b1;  // when finish is done, event_valid is true
         end
         default:;
