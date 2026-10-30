@@ -4,10 +4,12 @@
   "name": "Tiny Tapeout Dev Container",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "..",
+    "options": ["--platform=linux/amd64"]
   },
   "runArgs": [
-    "--memory=10GB"
+    "--platform=linux/amd64",
+    "--memory=6GB"
   ],
   "customizations": {
     "vscode": {
