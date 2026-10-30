@@ -1,5 +1,5 @@
 module receiver #(
-		parameter SAMPLE_SIZE = 64
+    parameter SAMPLE_SIZE = 64
 ) (
     input logic clk,
     input logic reset_n,
@@ -33,7 +33,7 @@ module receiver #(
   always_comb
     case (curr_state)
       OPCD:
-        if(data_in[15:8] == 8'b11111111) next_state = ADDR;
+        if (data_in[15:8] == 8'b11111111) next_state = ADDR;
         else next_state = OPCD;
       ADDR:
         if (addrCounter == maxAddrCount) next_state = BLKCNT;  // addresses read, prepare to read block counts
@@ -60,34 +60,30 @@ module receiver #(
       curr_state <= OPCD;
     end else begin
       case (curr_state)
-        OPCD: 
-          begin
-            event_valid       <= 1'b0;
-            timeDeltaCounter <= timeDeltaCounter + 16'b1;
-            if (data_in[15:8] == 8'b11111111) begin 
-              opcode <= data_in[3:0];
-              time_delta <= timeDeltaCounter;
-              timeDeltaCounter <= 16'b0;
-            end
+        OPCD: begin
+          event_valid       <= 1'b0;
+          timeDeltaCounter <= timeDeltaCounter + 16'b1;
+          if (data_in[15:8] == 8'b11111111) begin
+            opcode <= data_in[3:0];
+            time_delta <= timeDeltaCounter;
+            timeDeltaCounter <= 16'b0;
           end
-        ADDR: 
-          begin
-            lba[31 - 16 * addrCounter -: 16] <= data_in;
-            if (addrCounter == maxAddrCount) addrCounter <= 1'b0;
-            else addrCounter <= addrCounter + 1'b1;
-          end
+        end
+        ADDR: begin
+          lba[31 - 16 * addrCounter -: 16] <= data_in;
+          if (addrCounter == maxAddrCount) addrCounter <= 1'b0;
+          else addrCounter <= addrCounter + 1'b1;
+        end
         BLKCNT: block_count <= data_in;
-        SMPL: 
-          begin
-            data_sample[63 - 16 * sampleCounter -: 16] <= data_in;
-            if (sampleCounter == maxSampleCount) begin sampleCounter <= 2'b0;
-            end else sampleCounter <= sampleCounter + 2'b1;
-          end
-        FINSH: 
-          begin
-            time_delta  <= timeDeltaCounter;
-            event_valid <= 1'b1;  // when finish is done, event_valid is true
-          end
+        SMPL: begin
+          data_sample[63 - 16 * sampleCounter -: 16] <= data_in;
+          if (sampleCounter == maxSampleCount) sampleCounter <= 2'b0;
+          else sampleCounter <= sampleCounter + 2'b1;
+        end
+        FINSH: begin
+          time_delta  <= timeDeltaCounter;
+          event_valid <= 1'b1;  // when finish is done, event_valid is true
+        end
         default:;
       endcase
       curr_state <= next_state;
