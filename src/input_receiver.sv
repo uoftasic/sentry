@@ -80,7 +80,7 @@ module receiver #(
           if (sampleCounter == maxSampleCount) sampleCounter <= 2'b0;
           else sampleCounter <= sampleCounter + 2'b1;
         end
-        FINSH: begin
+        FINISH: begin
           event_valid <= 1'b1;  // when finish is done, event_valid is true
         end
         default:;
