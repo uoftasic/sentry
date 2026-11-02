@@ -19,7 +19,7 @@ module receiver #(
     ADDR,
     BLKCNT,
     SMPL,
-    FINSH
+    FINISH
   } state_t;
 
   state_t curr_state, next_state;
@@ -40,9 +40,9 @@ module receiver #(
         else next_state = ADDR;
       BLKCNT: next_state = SMPL;  // block counts read, prepare to read sample
       SMPL:
-        if (sampleCounter == maxSampleCount) next_state = FINSH;  // sample read, finishing
+        if (sampleCounter == maxSampleCount) next_state = FINISH;  // sample read, finishing
         else next_state = SMPL;
-      FINSH: next_state = OPCD;  // all done, getting ready for next cycle
+      FINISH: next_state = OPCD;  // all done, getting ready for next cycle
       default: next_state = OPCD;
     endcase
 
