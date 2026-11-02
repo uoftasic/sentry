@@ -30,9 +30,7 @@ module receiver #(
 
   // Data sample counters
   localparam int numData = SAMPLE_SIZE / 16 - 1;  // max count
-  localparam int numBits = $clog2(
-      numData + 1
-  );  // convert to binary to get number of bits, add 1 because numData starts from 0
+  localparam int numBits = (numData == 0) ? 1 : $clog2(numData + 1); // convert to binary to get number of bits, add 1 because numData starts from 0
   localparam bit [numBits - 1:0] maxSampleCount = numBits'(numData);
   logic [numBits - 1:0] sampleCounter;
 
