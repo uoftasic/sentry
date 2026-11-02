@@ -40,12 +40,12 @@ module receiver #(
   logic [15:0] timeDeltaCounter;
 
   // Start reading indicator
-  logic [7:0] start = 8'b11111111;
+  localparam bit [7:0] startTrigger = 8'b11111111;
 
   always_comb
     case (curr_state)
       OPCD:
-      if (data_in[15:8] == start) next_state = ADDR;
+      if (data_in[15:8] == startTrigger) next_state = ADDR;
       else next_state = OPCD;
       ADDR:
       if (addrCounter == maxAddrCount)
@@ -76,7 +76,7 @@ module receiver #(
         OPCD: begin
           event_valid      <= 1'b0;
           timeDeltaCounter <= timeDeltaCounter + 16'b1;
-          if (data_in[15:8] == start) begin
+          if (data_in[15:8] == startTrigger) begin
             opcode <= data_in[3:0];
             time_delta <= timeDeltaCounter;
             timeDeltaCounter <= 16'b0;
