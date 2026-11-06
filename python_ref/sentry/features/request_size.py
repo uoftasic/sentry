@@ -8,16 +8,16 @@ class RequestSizeTracker(FeatureTracker):
     """Tracks total and average request size."""
 
     def __init__(self) -> None:
-        """TODO(Task 7): initialize request-size accumulators."""
+        """Initialize request-size accumulators."""
         self.reset_window()
 
     def update(self, event: Event) -> None:
-        """TODO(Task 7): accumulate request sizes."""
+        """Accumulate request sizes."""
         self._n_events += 1
         self._total_bytes += event.size_bytes
 
     def features(self) -> dict[str, int | float]:
-        """TODO(Task 7): return total and average request size."""
+        """Return total and average request size."""
         avg_bytes = self._total_bytes // self._n_events if self._n_events else 0
 
         return {
@@ -26,6 +26,6 @@ class RequestSizeTracker(FeatureTracker):
         }
 
     def reset_window(self) -> None:
-        """TODO(Task 7): clear per-window request-size state."""
+        """Clear per-window request-size state."""
         self._n_events = 0
         self._total_bytes = 0
