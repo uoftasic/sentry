@@ -8,11 +8,11 @@ class ActivityTracker(FeatureTracker):
     """Tracks write/read activity and window timing."""
 
     def __init__(self) -> None:
-        """TODO(Task 2): initialize counters and timestamps."""
+        """Initialize counters and timestamps."""
         self.reset_window()
 
     def update(self, event: Event) -> None:
-        """TODO(Task 2): update activity state from one event."""
+        """Update activity state from one event."""
         self._n_events += 1
 
         if event.op.name == "WRITE":
@@ -26,7 +26,7 @@ class ActivityTracker(FeatureTracker):
         self._last_ts_ns = event.timestamp_ns
 
     def features(self) -> dict[str, int | float]:
-        """TODO(Task 2): return the activity features from TASKS.md."""
+        """Return the activity features from TASKS.md."""
         if self._first_ts_ns is None or self._last_ts_ns is None:
             window_time_ns = 0
         else:
@@ -45,7 +45,7 @@ class ActivityTracker(FeatureTracker):
         }
 
     def reset_window(self) -> None:
-        """TODO(Task 2): clear per-window activity state."""
+        """Clear per-window activity state."""
         self._n_events = 0
         self._n_writes = 0
         self._bytes_written = 0
