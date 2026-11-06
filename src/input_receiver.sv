@@ -1,5 +1,5 @@
-module receiver #(
-    parameter int SAMPLE_SIZE = 64 // SAMPLE_SIZE MUST BE MULTIPLES OF 16!!!
+module input_receiver #(
+    parameter int SAMPLE_SIZE = 64  // SAMPLE_SIZE MUST BE MULTIPLES OF 16!!!
 ) (
     input logic clk,
     input logic reset_n,
@@ -30,7 +30,9 @@ module receiver #(
 
   // Data sample counters
   localparam int numData = SAMPLE_SIZE / 16 - 1;  // max count
-  localparam int numBits = (numData == 0) ? 1 : $clog2(numData + 1); // convert to binary to get number of bits, add 1 because numData starts from 0
+  localparam int numBits = (numData == 0) ? 1 : $clog2(
+      numData + 1
+  );  // convert to binary to get number of bits, add 1 because numData starts from 0
   localparam bit [numBits - 1:0] maxSampleCount = numBits'(numData);
   logic [numBits - 1:0] sampleCounter;
 
@@ -81,20 +83,20 @@ module receiver #(
           end
         end
         ADDR: begin
-          lba[31 - 16 * addrCounter -: 16] <= data_in;
+          lba[31-16*addrCounter-:16] <= data_in;
           if (addrCounter == maxAddrCount) addrCounter <= 1'b0;
           else addrCounter <= addrCounter + 1'b1;
         end
         BLKCNT:  block_count <= data_in;
         SMPL: begin
-          data_sample[SAMPLE_SIZE - 1 - 16 * sampleCounter -: 16] <= data_in;
+          data_sample[SAMPLE_SIZE-1-16*sampleCounter-:16] <= data_in;
           if (sampleCounter == maxSampleCount) sampleCounter <= '0;
           else sampleCounter <= sampleCounter + 1'b1;
         end
         FINISH: begin
           event_valid <= 1'b1;  // when finish is done, event_valid is true
         end
-        default:;
+        default: ;
       endcase
       curr_state <= next_state;
     end
