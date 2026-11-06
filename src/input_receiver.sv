@@ -83,20 +83,20 @@ module input_receiver #(
           end
         end
         ADDR: begin
-          lba[31-16*addrCounter-:16] <= data_in;
+          lba[31 - 16 * addrCounter -: 16] <= data_in;
           if (addrCounter == maxAddrCount) addrCounter <= 1'b0;
           else addrCounter <= addrCounter + 1'b1;
         end
         BLKCNT:  block_count <= data_in;
         SMPL: begin
-          data_sample[SAMPLE_SIZE-1-16*sampleCounter-:16] <= data_in;
+          data_sample[SAMPLE_SIZE - 1 - 16 * sampleCounter -: 16] <= data_in;
           if (sampleCounter == maxSampleCount) sampleCounter <= '0;
           else sampleCounter <= sampleCounter + 1'b1;
         end
         FINISH: begin
           event_valid <= 1'b1;  // when finish is done, event_valid is true
         end
-        default: ;
+        default:;
       endcase
       curr_state <= next_state;
     end
