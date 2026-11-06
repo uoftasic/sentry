@@ -40,7 +40,7 @@ def process_csv(
 def interlace_reads_and_writes(
     list_of_row_writes: list[ransmap_row],
     list_of_row_reads: list[ransmap_row],
-    logical_block_size_bytes
+    logical_block_size_bytes: int
 ) -> list[Event]:
     pass
 
