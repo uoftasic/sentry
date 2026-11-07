@@ -1,5 +1,10 @@
+# Run from the python_ref directory:
+#   python -m sentry.ransmap path/to/ata_read.csv path/to/ata_write.csv
+# Add --show N to print more events, or --block-size BYTES for another block size.
+
 from __future__ import annotations
 
+import argparse
 import csv
 from dataclasses import dataclass
 from pathlib import Path
@@ -92,4 +97,43 @@ def interlace_reads_and_writes(
             )
     events.sort(key=lambda event: event.timestamp_ns)
     return events
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Inspect a RanSMAP ATA trace pair")
+    parser.add_argument("reads", type=Path, help="Path to ata_read.csv")
+    parser.add_argument("writes", type=Path, help="Path to ata_write.csv")
+    parser.add_argument(
+        "--block-size",
+        type=int,
+        default=512,
+        metavar="BYTES",
+        help="Logical block size in bytes (default: 512)",
+    )
+    parser.add_argument(
+        "--show",
+        type=int,
+        default=10,
+        metavar="N",
+        help="Number of first events to print (default: 10)",
+    )
+    args = parser.parse_args()
+    if args.show < 0:
+        parser.error("--show must be nonnegative")
+
+    try:
+        events = load_ransmap(args.reads, args.writes, args.block_size)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+
+    reads = sum(event.op == Op.READ for event in events)
+    print(f"Parsed {len(events)} events: {reads} reads, {len(events) - reads} writes")
+    for event in events[: args.show]:
+        print(event)
+    if len(events) > args.show:
+        print(f"... {len(events) - args.show} more events")
+
+
+if __name__ == "__main__":
+    main()
 
