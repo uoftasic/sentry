@@ -91,8 +91,8 @@ class LBATracker(FeatureTracker):
                     self.num_nonzero_regions += 1
                 self.LBA_histogram[region_index] += 1
 
-    def features(self) -> dict[str, int | float]:
-        """Return population variance and the number of occupied LBA regions.
+    def features(self) -> dict[str, int | float | list[int]]:
+        """Return population variance, region counts, and occupied regions.
 
         The histogram approximation uses region indices, then scales their
         variance by the square of the region width.
@@ -134,6 +134,7 @@ class LBATracker(FeatureTracker):
             "lba_variance": self.true_variance,
             "lba_histogram_variance": self.histogram_approximated_variance,
             "lba_regions_touched": self.num_nonzero_regions,
+            "lba_histogram": self.LBA_histogram.copy(),
         }
 
     def reset_window(self) -> None:
@@ -199,7 +200,7 @@ if __name__ == "__main__":
         tracker: LBATracker,
         requests: list[tuple[int, int]],
         expand: bool,
-    ) -> dict[str, int | float]:
+    ) -> dict[str, int | float | list[int]]:
         expected_lbas = [
             lba
             for start, count in requests
@@ -213,6 +214,7 @@ if __name__ == "__main__":
         assert tracker.num_events == len(requests)
         assert tracker.num_blocks == sum(count for _, count in requests)
         assert tracker.LBA_histogram == expected_histogram
+        assert result["lba_histogram"] == expected_histogram
         assert tracker.num_nonzero_regions == sum(bool(n) for n in expected_histogram)
         assert result["lba_regions_touched"] == tracker.num_nonzero_regions
         assert math.isclose(
