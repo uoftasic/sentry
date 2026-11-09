@@ -19,7 +19,7 @@ These features are accumulated over observation windows and passed to one or mor
 
 ## Setup
 
-The easiest way to get set up is to use the devcontainer, which installs all tools needed for RTL simulation and physical design / synthesis.
+The easiest way to get set up is to use the devcontainer, which installs all tools needed for RTL simulation and physical design / synthesis. The following steps are for Windows. If you are using MacOS, you can ignore the WSL VS Code extension in step 1, skip steps 2-3 and continue from  step 4 in MacOS's native terminal. (have not verified Mac setup; some1 pls test it so i can remove this note)
 
 #### 1. Install Prerequisites
 
@@ -30,7 +30,7 @@ The easiest way to get set up is to use the devcontainer, which installs all too
 
 #### 2. Install Ubuntu on WSL
 
-WSL lets you run a Linux environment in Windows, but you still need to install a Linux distribution. 
+WSL lets you run a Linux environment in Windows, but you still need to install a Linux distribution for Docker to use. 
 In PowerShell, run:
 ```bash
 wsl --install -d Ubuntu-24.04
@@ -41,7 +41,9 @@ You will then be prompted to create a username and password.
 #### 3. Enable Docker WSL Integration
 
 In Docker Desktop, go to **Settings (gear icon) > Resources > WSL Integration**. Enable integration by clicking the checkbox, and turn on the toggle for your new Linux distribution.
-<img width="1130" height="698" alt="image" src="https://github.com/user-attachments/assets/28941bbf-d6f4-474b-8b56-b6e504d25687" />
+
+
+<img width="565" height="349" alt="image" src="https://github.com/user-attachments/assets/28941bbf-d6f4-474b-8b56-b6e504d25687" />
 
 
 #### 4. Open the Dev Container
