@@ -22,7 +22,7 @@ from dataclasses import dataclass
 
 
 class DecisionTreeClassifier:
-    """lightbgm classifier"""
+    """lightbgm classifier
     This class must only see an ordered numeric feature vector. It must not
     contain feature-specific logic.
 
