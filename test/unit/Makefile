@@ -2,10 +2,15 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
 ifneq ($(MAKECMDGOALS),clean)
-ifndef MODULE
-$(error MODULE is required. Usage: make MODULE=<module_name>)
+ifndef DUT_MODULE
+$(error DUT_MODULE is required. Usage: make DUT_MODULE=<module_name>)
 endif
 endif
+
+# The outer Makefile uses MODULE as its public selector. Clear the legacy
+# cocotb variables before including cocotb's simulator Makefile.
+override MODULE :=
+override TOPLEVEL :=
 
 REPO_ROOT := $(abspath $(CURDIR)/../..)
 SRC_DIR := $(REPO_ROOT)/src
@@ -20,10 +25,10 @@ VERILOG_SOURCES := $(RTL_SOURCES)
 COMPILE_ARGS += -g2012
 COMPILE_ARGS += -I$(SRC_DIR)
 
-TOPLEVEL := $(MODULE)
-COCOTB_TEST_MODULES := test_$(MODULE)
+COCOTB_TOPLEVEL := $(DUT_MODULE)
+COCOTB_TEST_MODULES := test_$(DUT_MODULE)
 
-SIM_BUILD := $(CURDIR)/sim_build/$(MODULE)
+SIM_BUILD := $(CURDIR)/sim_build/$(DUT_MODULE)
 
 export PYTHONPATH := $(CURDIR):$(PYTHONPATH)
 

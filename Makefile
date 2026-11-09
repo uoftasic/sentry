@@ -37,7 +37,7 @@ unit:
 ifndef MODULE
 	$(error MODULE is required. Usage: make unit MODULE=<module_name>)
 endif
-	$(MAKE) -C $(UNIT_TEST_DIR) MODULE=$(MODULE)
+	$(MAKE) -C $(UNIT_TEST_DIR) DUT_MODULE=$(MODULE)
 
 unit-all:
 	@if [ -z "$(strip $(UNIT_MODULES))" ]; then \
