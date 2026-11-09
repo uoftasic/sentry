@@ -23,26 +23,45 @@ The easiest way to get set up is to use the devcontainer, which installs all too
 
 #### 1. Install Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) with the WSL2 engine enabled
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - VS Code **WSL** and **Dev Containers** extensions
 
-In Docker Desktop, enable WSL integration for your Ubuntu distribution under **Settings → Resources → WSL Integration**.
 
-#### 2. Open the Dev Container
+#### 2. Install Ubuntu on WSL
 
-From the WSL terminal, open the cloned repository:
-
+WSL lets you run a Linux environment in Windows, but you still need to install a Linux distribution. 
+In PowerShell, run:
 ```bash
-cd ~/sentry
+wsl --install -d Ubuntu-24.04
+```
+You will then be prompted to create a username and password.
+
+
+#### 3. Enable Docker WSL Integration
+
+In Docker Desktop, go to **Settings (gear icon) > Resources > WSL Integration**. Enable integration by clicking the checkbox, and turn on the toggle for your new Linux distribution.
+<img width="1130" height="698" alt="image" src="https://github.com/user-attachments/assets/28941bbf-d6f4-474b-8b56-b6e504d25687" />
+
+
+#### 4. Open the Dev Container
+
+Search for and run **Ubuntu 24.04** through the start menu.
+
+In the terminal that opens up, run the following commands to clone the repository and open the repository in vs code.
+```bash
+cd ~
+git clone https://github.com/uoftasic/sentry.git
+cd sentry
 code .
 ```
 
-In VS Code, open the Command Palette (`Ctrl+Shift+P`) and select **Dev Containers: Reopen in Container**.
+In VS Code, open the Command Palette (`Ctrl+Shift+P`) and select **Dev Containers: Reopen in Container**. VS Code might give you a prompt/notification do this as well when the window opens.
 
 Wait for the container to build. This may take several minutes on the first run.
 
-#### 3. Verify the Environment
+
+#### 5. Verify the Environment
 
 Once the container is running, open a terminal in VS Code and run:
 
