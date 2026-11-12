@@ -5,7 +5,7 @@ This does not need the rest of the pipeline (parser, trackers, window).
 """
 from __future__ import annotations
 
-from classifier import DecisionTreeClassifier, TreeNode, WeightedSumClassifier
+from sentry.classifiers import DecisionTreeClassifier, TreeNode, WeightedSumClassifier
 
 
 def build_demo_forest() -> list[list[TreeNode]]:

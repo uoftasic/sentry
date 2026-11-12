@@ -18,11 +18,33 @@ class Classifier(ABC):
 
 def __getattr__(name: str):
     """Keep the old import path working during the package migration."""
-    if name == "WeightedSumClassifier":
-        from .classifiers.weighted_sum import WeightedSumClassifier
+    exported = {
+        "DecisionTreeClassifier",
+        "TreeNode",
+        "TsetlinClassifier",
+        "WeightedSumClassifier",
+    }
+    if name in exported:
+        from .classifiers import (
+            DecisionTreeClassifier,
+            TsetlinClassifier,
+            TreeNode,
+            WeightedSumClassifier,
+        )
 
-        return WeightedSumClassifier
+        return {
+            "DecisionTreeClassifier": DecisionTreeClassifier,
+            "TreeNode": TreeNode,
+            "TsetlinClassifier": TsetlinClassifier,
+            "WeightedSumClassifier": WeightedSumClassifier,
+        }[name]
     raise AttributeError(name)
 
 
-__all__ = ["Classifier", "WeightedSumClassifier"]
+__all__ = [
+    "Classifier",
+    "DecisionTreeClassifier",
+    "TreeNode",
+    "TsetlinClassifier",
+    "WeightedSumClassifier",
+]

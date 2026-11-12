@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from math import floor
 
 from ..classifier import Classifier
@@ -64,14 +65,14 @@ class WeightedSumClassifier(Classifier):
     def num_features(self) -> int:
         return len(self.weights)
 
-    def _check_vector(self, feature_vector: list[float]) -> None:
+    def _check_vector(self, feature_vector: Sequence[float]) -> None:
         if len(feature_vector) != len(self.weights):
             raise ValueError(
                 f"expected {len(self.weights)} features, "
                 f"got {len(feature_vector)}"
             )
 
-    def _accumulate(self, feature_vector: list[float]) -> int:
+    def _accumulate(self, feature_vector: Sequence[float]) -> int:
         """Integer accumulator value at 2 * fraction_bits fraction bits."""
         fraction_bits = self.fraction_bits
         assert fraction_bits is not None
@@ -80,7 +81,7 @@ class WeightedSumClassifier(Classifier):
             accumulator += weight * _quantize(feature, fraction_bits)
         return accumulator
 
-    def score(self, feature_vector: list[float]) -> float:
+    def score(self, feature_vector: Sequence[float]) -> float:
         """Return bias + sum(weight * feature)."""
         self._check_vector(feature_vector)
         if self.fraction_bits is None:
@@ -90,7 +91,7 @@ class WeightedSumClassifier(Classifier):
             )
         return self._accumulate(feature_vector) / (1 << (2 * self.fraction_bits))
 
-    def predict(self, feature_vector: list[float]) -> bool:
+    def predict(self, feature_vector: Sequence[float]) -> bool:
         """Return True when the score is strictly above the threshold."""
         self._check_vector(feature_vector)
         if self.fraction_bits is None:
