@@ -45,14 +45,31 @@ def main() -> None:
         window_size=WINDOW_SIZE,
     )
 
-    # TODO(Task 10):
-    # Decide the final ordered feature names after the tracker tasks are merged.
-    feature_names: list[str] = []
+    # Ordered scalar features passed to the classifier. The LBA histogram is
+    # intentionally excluded because it is list-valued rather than scalar.
+    feature_names: list[str] = [
+        "num_writes",
+        "write_fraction",
+        "bytes_written",
+        "bytes_read",
+        "window_time_ns",
+        "average_write_entropy",
+        "write_entropy_variance",
+        "lba_variance",
+        "lba_histogram_variance",
+        "lba_regions_touched",
+        "read_then_write_count",
+        "read_then_write_fraction",
+        "read_write_transition_count",
+        "max_consecutive_writes",
+        "total_request_bytes",
+        "avg_request_bytes",
+    ]
 
     # TODO(Task 10):
     # Supply one weight per feature after feature_names is finalized.
     classifier = WeightedSumClassifier(
-        weights=[],
+        weights=[1.0] * len(feature_names),
         bias=0.0,
         threshold=0.0,
     )
