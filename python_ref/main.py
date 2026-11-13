@@ -48,22 +48,7 @@ def main() -> None:
     # Ordered scalar features passed to the classifier. The LBA histogram is
     # intentionally excluded because it is list-valued rather than scalar.
     feature_names: list[str] = [
-        "num_writes",
-        "write_fraction",
-        "bytes_written",
-        "bytes_read",
-        "window_time_ns",
-        "average_write_entropy",
-        "write_entropy_variance",
-        "lba_variance",
-        "lba_histogram_variance",
-        "lba_regions_touched",
-        "read_then_write_count",
-        "read_then_write_fraction",
-        "read_write_transition_count",
-        "max_consecutive_writes",
-        "total_request_bytes",
-        "avg_request_bytes",
+         
     ]
 
     # TODO(Task 10):
