@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -40,13 +39,11 @@ def process_csv(path: str | Path) -> list[ransmap_row]:
     """Read the six-column, headerless RanSMAP ATA CSV format."""
     rows: list[ransmap_row] = []
     with Path(path).open("r", newline="", encoding="utf-8-sig") as file:
-        for line_number, fields in enumerate(csv.reader(file), start=1):
+        for fields in csv.reader(file):
             if not fields or all(not field.strip() for field in fields):
                 continue
             if len(fields) != 6:
-                raise ValueError(
-                    f"{path}:{line_number}: expected 6 columns, got {len(fields)}"
-                )
+                raise ValueError(f"{path}: expected 6 columns, got {len(fields)}")
 
             try:
                 timestamp_s = int(fields[0].strip())
@@ -55,18 +52,12 @@ def process_csv(path: str | Path) -> list[ransmap_row]:
                 size = int(fields[3].strip())
                 entropy_value = float(fields[4].strip())
             except ValueError as exc:
-                raise ValueError(
-                    f"{path}:{line_number}: invalid numeric CSV row: {fields!r}"
-                ) from exc
+                raise ValueError(f"{path}: invalid numeric CSV row: {fields!r}") from exc
 
             if not 0 <= time_ns < 1_000_000_000:
-                raise ValueError(
-                    f"{path}:{line_number}: nanosecond offset out of range: {time_ns}"
-                )
+                raise ValueError(f"{path}: nanosecond offset out of range: {time_ns}")
             if lba < 0 or size < 0:
-                raise ValueError(
-                    f"{path}:{line_number}: LBA and size must be nonnegative"
-                )
+                raise ValueError(f"{path}: LBA and size must be nonnegative")
 
             rows.append(
                 ransmap_row(
@@ -89,18 +80,19 @@ def interlace_reads_and_writes(
     events: list[Event] = []
     for op, rows in ((Op.WRITE, list_of_row_writes), (Op.READ, list_of_row_reads)):
         for row in rows:
+            if row.size % logical_block_size_bytes:
+                raise ValueError(
+                    f"request size {row.size} is not a multiple of "
+                    f"logical block size {logical_block_size_bytes}"
+                )
             events.append(
                 Event(
                     op=op,
                     timestamp_ns=row.timestamp_s * 1_000_000_000 + row.time_ns,
                     lba=row.lba,
-                    # The trace contains partial-block requests.  A block
-                    # count describes the span touched by the request, so
-                    # round up rather than dropping the partial block.
-                    block_count=math.ceil(row.size / logical_block_size_bytes),
+                    block_count=row.size // logical_block_size_bytes,
                     entropy=row.entropy if op == Op.WRITE else None,
                     logical_block_size_bytes=logical_block_size_bytes,
-                    request_size_bytes=row.size,
                 )
             )
     events.sort(key=lambda event: event.timestamp_ns)
