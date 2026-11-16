@@ -17,20 +17,20 @@ module window_controller #(
     parameter int WINDOW_SIZE   = 64,  // see issue on github
     parameter int FEATURE_WIDTH = 16,  // width of the concatenated feature bus
     parameter int INDEX_WIDTH   = 8    // window index width, wraps around
-) 
-(   input logic clk,
-    input logic reset_n,
+)
+( input logic clk,
+  input logic reset_n,
 
-    input logic event_valid, // from input_receiver.sv
+  input logic event_valid, // from input_receiver.sv
 
-    output logic tracker_event_valid, // To / from the feature trackers
-    output logic window_reset,
-    input  logic [FEATURE_WIDTH - 1:0] features_in,
+  output logic tracker_event_valid, // To / from the feature trackers
+  output logic window_reset,
+  input  logic [FEATURE_WIDTH - 1:0] features_in,
 
-    // To the classifier
-    output logic feature_valid,
-    output logic [FEATURE_WIDTH - 1:0] feature_vector,
-    output logic [INDEX_WIDTH - 1:0] window_index
+  // To the classifier
+  output logic feature_valid,
+  output logic [FEATURE_WIDTH - 1:0] feature_vector,
+  output logic [INDEX_WIDTH - 1:0] window_index
 );
 
   localparam int countWidth = $clog2(WINDOW_SIZE + 1); // Width of the event counter
@@ -43,7 +43,7 @@ module window_controller #(
   assign tracker_event_valid = event_valid; // send every event to every tracker
 
   always_ff @(posedge clk)
-    if (reset_n == 1'b0) 
+    if (reset_n == 1'b0)
       begin
         event_count <= '0;
         capture <= 1'b0;
