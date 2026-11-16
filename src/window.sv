@@ -1,11 +1,11 @@
-// Module for window controller 
+// Module for window controller
 
 // For every event:
 //   1. event is sent to every feature tracker (tracker_event_valid)
-//   2. increment the event count 
+//   2. increment the event count
 //
 // When WINDOW_SIZE events have been processed:
-//   1. Every tracker's features are collected 
+//   1. Every tracker's features are collected
 //   2. combined into one vector: the top level concatenates the trackers'
 //      feature outputs onto features_in.
 //   3. features_in is latched into feature_vector and feature_valid pulses for
@@ -18,8 +18,7 @@ module window_controller #(
     parameter int FEATURE_WIDTH = 16,  // width of the concatenated feature bus
     parameter int INDEX_WIDTH   = 8    // window index width, wraps around
 ) 
-(
-    input logic clk,
+(   input logic clk,
     input logic reset_n,
 
     input logic event_valid, // from input_receiver.sv
@@ -46,19 +45,19 @@ module window_controller #(
   always_ff @(posedge clk)
     if (reset_n == 1'b0) 
       begin
-        event_count    <= '0;
-        capture        <= 1'b0;
-        feature_valid  <= 1'b0;
+        event_count <= '0;
+        capture <= 1'b0;
+        feature_valid <= 1'b0;
         feature_vector <= '0;
-        window_index   <= '1;  // first completed window wraps this to 0
-      end 
-    else 
+        window_index <= '1;  // first completed window wraps this to 0
+      end
+    else
       begin
-        capture       <= 1'b0;
+        capture <= 1'b0;
         feature_valid <= 1'b0;
 
         // count events and detect the end of the window.
-        if (event_valid) 
+        if (event_valid)
         begin
           if (event_count == lastCount) begin
             event_count <= '0;  // step 5: begin the next window
@@ -75,7 +74,7 @@ module window_controller #(
         window_index   <= window_index + 1'b1;
       end
     end
-    
+
   assign window_reset = capture;
 
 `ifndef SYNTHESIS
