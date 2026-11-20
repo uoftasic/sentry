@@ -13,7 +13,7 @@ from sentry.ransmap import load_ransmap
 from sentry.window import WindowController
 
 
-WINDOW_SIZE = 64
+WINDOW_SIZE = 128
 NUM_LBA_REGIONS = 32
 
 
