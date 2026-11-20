@@ -21,3 +21,6 @@ __pycache__/
 .venv/
 results.xml
 /tt
+.gitignore
+python_ref/training/train.csv
+python_ref/training/test.csv
