@@ -14,7 +14,6 @@ test/gate_level_netlist.v
 
 .venv
 results.xml
-build/
 sim_build/
 __pycache__/
 *.pyc

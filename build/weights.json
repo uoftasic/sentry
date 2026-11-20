@@ -1,0 +1,52 @@
+{
+  "feature_names": [
+    "num_writes",
+    "write_fraction",
+    "bytes_written",
+    "bytes_read",
+    "window_time_ns",
+    "average_write_entropy",
+    "write_entropy_variance",
+    "lba_variance",
+    "lba_histogram_variance",
+    "lba_regions_touched",
+    "read_then_write_count",
+    "read_then_write_fraction",
+    "read_write_transition_count",
+    "max_consecutive_writes",
+    "total_request_bytes",
+    "avg_request_bytes"
+  ],
+  "weights": [
+    -0.005277328353164279,
+    -0.33774901460251383,
+    -3.999345402759641e-06,
+    3.999075436108318e-06,
+    -2.048711158364093e-09,
+    2.4268255524433737,
+    -4.308528555816556,
+    7.73639049246268e-16,
+    -1.247041070797598e-15,
+    0.6936879306898461,
+    -0.02738000027725519,
+    0.43760782171933865,
+    0.18962128205628093,
+    0.003810750504732548,
+    -1.65671105116619e-05,
+    -0.0010594034278453106
+  ],
+  "bias": 6.680601486047254,
+  "threshold": 0.0,
+  "training_accuracy_by_epoch": [
+    0.7409764548531009,
+    0.7412585708771628,
+    0.741443228638367,
+    0.7415034988798711,
+    0.7415535103568639,
+    0.7415419692467887,
+    0.7415624867758114,
+    0.7415765925770145,
+    0.7415817219592702,
+    0.7415971101060371
+  ]
+}
